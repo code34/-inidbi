@@ -17,7 +17,7 @@ void Logger::write(char *file, char *log, ... )
 {
 	va_list va_alist;
 	
-	char logbuf[4096] = { 0 };
+	char logbuf[8192] = { 0 };
 	
 	FILE * fp = NULL;
 

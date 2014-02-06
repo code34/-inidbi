@@ -1,5 +1,4 @@
-v 1.2 : iniDBI(IMPROVED) by code34 -
-v 1.1 : iniDBI(IMPROVED) by code34 -
+v 1.1 - 1.5 : iniDBI(IMPROVED) by code34 -
 v 1.0 : IniDB by SicSemperTyrannis http://raiderbattalion.enjin.com/
 
 Function: iniDB_version

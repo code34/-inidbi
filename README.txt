@@ -1,7 +1,7 @@
 iniDBI(IMPROVED) - A simple server-side database extension using INI files
 
 Authors: 
-	inidbi - v1.1 code34 - nicolas_boiteux@yahoo.fr
+	inidbi - v1.1 - 1.5 code34 - nicolas_boiteux@yahoo.fr
 	inidb - v1.0 SicSemperTyrannis http://raiderbattalion.enjin.com/
 	
 How to use:
@@ -21,6 +21,9 @@ How to use:
 ----------------------------------------------------------------------------------------------
 
 CHANGELOG
+
+06-february-2014 - inidbi
+	- add deletekey method
 
 16-November-2013 - inidbi
 	- check input/output data type

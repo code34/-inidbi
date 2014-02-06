@@ -1,9 +1,13 @@
-v 1.1 - 1.5 : iniDBI(IMPROVED) by code34 -
+v 1.5 : iniDBI(IMPROVED) by code34 - nicolas_boiteux@yahoo.fr
+v 1.4 : iniDBI(IMPROVED) by code34 - nicolas_boiteux@yahoo.fr
+v 1.3 : iniDBI(IMPROVED) by code34 - nicolas_boiteux@yahoo.fr
+v 1.2 : iniDBI(IMPROVED) by code34 - nicolas_boiteux@yahoo.fr
+v 1.1 : iniDBI(IMPROVED) by code34 - nicolas_boiteux@yahoo.fr
 v 1.0 : IniDB by SicSemperTyrannis http://raiderbattalion.enjin.com/
 
 Function: iniDB_version
 Usage: diag_log call iniDB_version;
-Output: 1.1
+Output: the dll version and addon version
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -19,25 +23,37 @@ Output: true if the file was deleted successfully, false otherwise
 Notes: If you are concerned about security, you can recompile the PBO/DLL without this function.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
+
+Function: iniDB_deletesection
+Usage: [databasename, section] call iniDB_deletesection;
+Output: true if the section was deleted successfully, false otherwise
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+Function: iniDB_deletekey
+Usage: [databasename, section, key] call iniDB_deletekey;
+Output: true if the key was deleted successfully, false otherwise
+
+----------------------------------------------------------------------------------------------------------------------------------------------
 Function: iniDB_read
-Prototype: [databasename, section, variablename, ("STRING"|"ARRAY"|"SCALAR"|"BOOL")] call iniDB_read;
-Usage: ["myDatabaseFile", "SicSemperTyrannis", name player, "STRING"] call iniDB_read;
-Usage: ["myDatabaseFile", "SicSemperTyrannis", "position", "ARRAY"] call iniDB_read;
-Usage: ["myDatabaseFile", "SicSemperTyrannis", "health", "SCALAR"] call iniDB_read;
+Prototype: [databasename, section, variablename, ("STRING"|"ARRAY"|"SCALAR")] call iniDB_read;
+Usage: ["myDatabaseFile", "sectionname", name player, "STRING"] call iniDB_read;
+Usage: ["myDatabaseFile", "sectionname", "position", "ARRAY"] call iniDB_read;
+Usage: ["myDatabaseFile", "sectionname", "health", "SCALAR"] call iniDB_read;
 
 output: data
 inidb_errno: true if read succeed, false if read failed
-data: data return type depends of fourth parameter function. Return empty array, string, 0, or false, if not set
+data: data return type depends of fourth parameter function. Return empty array, string, or 0, if not set
 Notes: fourth parameters musts exist (not like in iniDB where it is optionnal)
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 Function: iniDB_write
 Prototype: [databasename, section, variablename, value] call iniDB_read;
-Usage: ["myDatabaseFile", "SicSemperTyrannis", "position", position player] call iniDB_write;
-Usage: ["myDatabaseFile", "SicSemperTyrannis", "health", 100.0] call iniDB_write;
-Usage: ["myDatabaseFile", "SicSemperTyrannis", "name", profileName player] call iniDB_write;
+Usage: ["myDatabaseFile", "sectionname", "position", position player] call iniDB_write;
+Usage: ["myDatabaseFile", "sectionname", "health", 100.0] call iniDB_write;
+Usage: ["myDatabaseFile", "sectionname", "name", profileName player] call iniDB_write;
 Output: true if the write succeeds, false otherwise.
-Notes: The fourth parameter is assumed to be a string, array, scalar, bool. If it is not, it will exits. This function doesn't accept object type.
+Notes: The fourth parameter is assumed to be a string, array or number (scalar). If it is not, it will save as a string by default. This function automatically derives the type by the variable passed.
 Please avoid saving strings or data with the character ' in it, it is an expected bug, but untested.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -66,4 +82,4 @@ Notes: This is a standard implementation and will match PHP and various other la
 Function: iniDB_Base64Decode
 Usage: diag_log "U2ljU2VtcGVyVHlyYW5uaXM=" call iniDB_Base64Decode;
 Output: "SicSemperTyrannis"
-Notes: This is a standard implementation and will match PHP and various other languages. 
+Notes: This is a standard implementation and will match PHP and various other languages.  

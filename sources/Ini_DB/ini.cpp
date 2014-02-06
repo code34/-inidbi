@@ -24,3 +24,21 @@ bool Ini::Write(char* file, char* section, char* key, char* value)
 
 	return true;
 }
+
+bool Ini::Deletesection(char* file, char* section) 
+{
+   if(WritePrivateProfileStructA(section, NULL, NULL, 0, file) == NULL)
+   {
+	   return false;
+   }
+   return true;
+}
+
+bool Ini::Deletekey(char* file, char* section, char* key) 
+{
+   if(WritePrivateProfileStructA(section, key, NULL, 0, file) == NULL)
+   {
+	   return false;
+   }
+   return true;
+}

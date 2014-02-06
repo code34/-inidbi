@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#define INIDB_VERSION_NUMBER "1.1"
+#define INIDB_VERSION_NUMBER "1.2"
 
 extern "C"
 {
@@ -22,9 +22,9 @@ extern "C"
 					if(file != NULL && sec != NULL && key != NULL) {
 						char realFile[MAX_PATH] = {0};
 						sprintf_s(realFile, MAX_PATH, "db\\%s.ini", file);
-						char trueValue[4096] = {0};
+						char trueValue[8192] = {0};
 
-						if(Ini::Read(logger.dirFile(realFile), sec, key, "c0f916b469c17e0f967c6774e0d837fac0f916b469c17e0f967c6774e0d837fa", trueValue, 4096)){
+						if(Ini::Read(logger.dirFile(realFile), sec, key, "c0f916b469c17e0f967c6774e0d837fac0f916b469c17e0f967c6774e0d837fa", trueValue, 8192)){
 							if(_stricmp(trueValue, "c0f916b469c17e0f967c6774e0d837fac0f916b469c17e0f967c6774e0d837fa") == 0){
 								strncpy(output, "[false];", outputSize);
 							} else {
@@ -49,6 +49,41 @@ extern "C"
 						sprintf_s(realFile, MAX_PATH, "db\\%s.ini", file);
 						
 						if(Ini::Write(logger.dirFile(realFile), sec, key, val))	{
+							strncpy(output, "[true];", outputSize);
+						} else {
+							strncpy(output, "[false];", outputSize);
+						}
+					} else {
+						strncpy(output, "[false];", outputSize);
+					}
+				} else if(_stricmp(func, "deletesection") == 0)	{
+					
+					char* file = strtok(NULL, ";");
+					char* sec = strtok(NULL, ";");
+					
+					if(file != NULL && sec != NULL) {
+						char realFile[MAX_PATH] = {0};
+						sprintf_s(realFile, MAX_PATH, "db\\%s.ini", file);
+						
+						if(Ini::Deletesection(logger.dirFile(realFile), sec))	{
+							strncpy(output, "[true];", outputSize);
+						} else {
+							strncpy(output, "[false];", outputSize);
+						}
+					} else {
+						strncpy(output, "[false];", outputSize);
+					}
+				} else if(_stricmp(func, "deletekey") == 0)	{
+					
+					char* file = strtok(NULL, ";");
+					char* sec = strtok(NULL, ";");
+					char* key = strtok(NULL, ";");
+					
+					if(file != NULL && sec != NULL) {
+						char realFile[MAX_PATH] = {0};
+						sprintf_s(realFile, MAX_PATH, "db\\%s.ini", file);
+						
+						if(Ini::Deletekey(logger.dirFile(realFile), sec, key))	{
 							strncpy(output, "[true];", outputSize);
 						} else {
 							strncpy(output, "[false];", outputSize);

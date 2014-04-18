@@ -54,21 +54,66 @@
 		_this;
 	};
 
-	iniDB_log = {
-		hint format["%1", _this select 0];
-		diag_log format["%1", _this select 0];
-	};
-	
-	iniDB_exists = {
-		private["_data"];
-		_data = "iniDB" callExtension format["exists;%1", _this];
-		_data = call compile _data;
+	iniDB_cast = {
+		private["_data", "_type"];
+		_data = _this select 0;
+		_type = _this select 1;
 		
-		if((_data select 0) && (_data select 1)) then {
-			true;
-		} else {
-			false;
+		switch (toupper(_type)) do {
+			case "ARRAY": {
+				if(_data == "") then {
+					_data = [];
+				} else {
+					_data = call compile _data;
+				};
+			};
+	
+			case "SCALAR": {
+				if(_data == "") then {
+					_data = 0;
+				} else {
+					_data = parseNumber _data;
+				};
+			};
+
+			case "BOOL": {
+				if(_data == "") then {
+					_data = false;
+				} else {
+					_data = call compile _data;
+				};
+			};
+	
+			default {
+				if(_data == "") then {
+					_data = "";
+				} else {
+					_data = format["%1", _data];
+				};
+			};
+			
 		};
+		_data;
+	};
+
+	iniDB_chunk = {
+		private ["_array", "_count", "_chunk", "_data"];
+		_data = (toarray(format["%1", _this select 0]);
+		_array = [];
+		_chunk = [];
+		_count = 0;
+
+		{
+			if(_count > 8191) then {
+				_array = _array + _chunk;
+				_chunk = [];
+				_count = 0;
+			};			
+			_chunk = _chunk + [_x];
+			_count = _count + 1;
+		}foreach _data;
+		_array = tostring(_array);
+		_array;
 	};
 	
 	iniDB_delete = {
@@ -120,47 +165,22 @@
 			false;
 		};
 	};
-		
-	iniDB_Datarizer = {
-		private["_data", "_type"];
-		_data = _this select 0;
-		_type = _this select 1;
-		
-		switch (toupper(_type)) do {
-			case "ARRAY": {
-				if(_data == "") then {
-					_data = [];
-				} else {
-					_data = call compile _data;
-				};
-			};
-	
-			case "SCALAR": {
-				if(_data == "") then {
-					_data = 0;
-				} else {
-					_data = parseNumber _data;
-				};
-			};
 
-			case "BOOL": {
-				if(_data == "") then {
-					_data = false;
-				} else {
-					_data = call compile _data;
-				};
-			};
-	
-			default {
-				if(_data == "") then {
-					_data = "";
-				} else {
-					_data = format["%1", _data];
-				};
-			};
-			
+	iniDB_exists = {
+		private["_data"];
+		_data = "iniDB" callExtension format["exists;%1", _this];
+		_data = call compile _data;
+		
+		if((_data select 0) && (_data select 1)) then {
+			true;
+		} else {
+			false;
 		};
-		_data;
+	};
+
+	iniDB_log = {
+		hint format["%1", _this select 0];
+		diag_log format["%1", _this select 0];
 	};
 	
 	iniDB_read = {
@@ -189,7 +209,7 @@
 		} else {
 			_data = "";
 		};
-		_data = [_data, _type] call iniDB_Datarizer;
+		_data = [_data, _type] call iniDB_cast;
 		inidb_errno = _ret;
 		_data;
 	};
@@ -217,7 +237,7 @@
 		};
 		if(_exit) exitWith { _log = format["IniDBI: write failed, %1 %2 data contains object should be ARRAY, SCALAR, STRING type", _section, _key]; [_log] call iniDB_log;};
 	
-		if(count (toarray(format["%1", _data])) > 8095) then {
+		if(count (toarray(format["%1", _data])) > 8191) then {
 			_data = false;
 			_log = format["IniDBI: write failed %1 %2 data too big > 8K", _section, _key];
 			[_log] call iniDB_log;

@@ -98,21 +98,22 @@
 
 	iniDB_chunk = {
 		private ["_array", "_count", "_chunk", "_data"];
-		_data = (toarray(format["%1", _this select 0]);
+
+		_data = toarray(format["%1", _this select 0]);
 		_array = [];
 		_chunk = [];
 		_count = 0;
 
 		{
-			if(_count > 8191) then {
-				_array = _array + _chunk;
-				_chunk = [];
-				_count = 0;
-			};			
 			_chunk = _chunk + [_x];
 			_count = _count + 1;
+			if(_count > 8191) then {
+				_count = 0;
+				_array = _array + [tostring(_chunk)];
+				_chunk = [];
+			};
 		}foreach _data;
-		_array = tostring(_array);
+		_array = _array + [tostring(_chunk)];
 		_array;
 	};
 	

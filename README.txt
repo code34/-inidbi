@@ -1,7 +1,6 @@
 iniDBI(IMPROVED) - A simple server-side database extension using INI files
 
 Authors:
-inidbi - v1.5 code34 - nicolas_boiteux@yahoo.fr
 inidbi - v1.4 code34 - nicolas_boiteux@yahoo.fr
 inidbi - v1.3 code34 - nicolas_boiteux@yahoo.fr
 inidbi - v1.2 code34 - nicolas_boiteux@yahoo.fr

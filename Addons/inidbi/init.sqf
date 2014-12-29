@@ -1,5 +1,4 @@
 	/*
-		v 1.5 : IniDBI by code34 - nicolas_boiteux@yahoo.fr
 		v 1.4 : IniDBI by code34 - nicolas_boiteux@yahoo.fr
 		v 1.3 : IniDBI by code34 - nicolas_boiteux@yahoo.fr
 		v 1.2 : IniDBI by code34 - nicolas_boiteux@yahoo.fr
@@ -9,7 +8,7 @@
 	
 	iniDB_version = {
 		private["_data", "_version"];
-		_version = "1.5";
+		_version = "1.4";
 		_data = "iniDB" callExtension "version";
 		_data = format["Inidbi: %1 Dll: %2", _version, _data];
 		_data;
@@ -54,7 +53,52 @@
 		_this;
 	};
 
-	iniDB_cast = {
+	iniDB_log = {
+		hint format["%1", _this select 0];
+		diag_log format["%1", _this select 0];
+	};
+	
+	iniDB_exists = {
+		private["_data"];
+		_data = "iniDB" callExtension format["exists;%1", _this];
+		_data = call compile _data;
+		
+		if((_data select 0) && (_data select 1)) then {
+			true;
+		} else {
+			false;
+		};
+	};
+	
+	iniDB_delete = {
+		_data = "iniDB" callExtension format["delete;%1", _this];
+		_data = call compile _data;
+		
+		if((_data select 0)) then {
+			true;
+		} else {
+			false;
+		};
+	};
+
+	iniDB_deletesection = {
+		_file 		= _this select 0;
+		_section 	= _this select 1;
+
+		if(isnil "_file") exitWith { ["IniDBI: deletesection failed, databasename is empty"] call iniDB_log;};
+		if(isnil "_section") exitWith { ["IniDBI: deletesection failed, sectionname is empty"] call iniDB_log;};
+	
+		_result = "iniDB" callExtension format["deletesection;%1;%2", _file, _section];
+		_result = call compile _result;
+		
+		if((_result select 0)) then {
+			true;
+		} else {
+			false;
+		};
+	};
+		
+	iniDB_Datarizer = {
 		private["_data", "_type"];
 		_data = _this select 0;
 		_type = _this select 1;
@@ -95,94 +139,6 @@
 		};
 		_data;
 	};
-
-	iniDB_chunk = {
-		private ["_array", "_count", "_chunk", "_data"];
-
-		_data = toarray(format["%1", _this select 0]);
-		_array = [];
-		_chunk = [];
-		_count = 0;
-
-		{
-			_chunk = _chunk + [_x];
-			_count = _count + 1;
-			if(_count > 8191) then {
-				_count = 0;
-				_array = _array + [tostring(_chunk)];
-				_chunk = [];
-			};
-		}foreach _data;
-		_array = _array + [tostring(_chunk)];
-		_array;
-	};
-	
-	iniDB_delete = {
-		private["_data"];
-		_data = "iniDB" callExtension format["delete;%1", _this];
-		_data = call compile _data;
-		
-		if((_data select 0)) then {
-			true;
-		} else {
-			false;
-		};
-	};
-
-	iniDB_deletesection = {
-		private["_file", "_section", "_result"];
-		_file 		= _this select 0;
-		_section 	= _this select 1;
-
-		if(isnil "_file") exitWith { ["IniDBI: deletesection failed, databasename is empty"] call iniDB_log;};
-		if(isnil "_section") exitWith { ["IniDBI: deletesection failed, sectionname is empty"] call iniDB_log;};
-	
-		_result = "iniDB" callExtension format["deletesection;%1;%2", _file, _section];
-		_result = call compile _result;
-		
-		if((_result select 0)) then {
-			true;
-		} else {
-			false;
-		};
-	};
-
-	iniDB_deletekey = {
-		private["_file", "_section", "_key", "_result"];
-		_file 		= _this select 0;
-		_section 	= _this select 1;
-		_key 		= _this select 1;
-
-		if(isnil "_file") exitWith { ["IniDBI: deletekey failed, databasename is empty"] call iniDB_log;};
-		if(isnil "_section") exitWith { ["IniDBI: deletekey failed, sectionname is empty"] call iniDB_log;};
-		if(isnil "_key") exitWith { ["IniDBI: deletekey failed, key is empty"] call iniDB_log;};
-	
-		_result = "iniDB" callExtension format["deletekey;%1;%2;%3", _file, _section, _key];
-		_result = call compile _result;
-		
-		if((_result select 0)) then {
-			true;
-		} else {
-			false;
-		};
-	};
-
-	iniDB_exists = {
-		private["_data"];
-		_data = "iniDB" callExtension format["exists;%1", _this];
-		_data = call compile _data;
-		
-		if((_data select 0) && (_data select 1)) then {
-			true;
-		} else {
-			false;
-		};
-	};
-
-	iniDB_log = {
-		hint format["%1", _this select 0];
-		diag_log format["%1", _this select 0];
-	};
 	
 	iniDB_read = {
 		private["_file", "_section", "_key", "_type", "_data", "_ret", "_result"];
@@ -210,7 +166,7 @@
 		} else {
 			_data = "";
 		};
-		_data = [_data, _type] call iniDB_cast;
+		_data = [_data, _type] call iniDB_Datarizer;
 		inidb_errno = _ret;
 		_data;
 	};
@@ -238,7 +194,7 @@
 		};
 		if(_exit) exitWith { _log = format["IniDBI: write failed, %1 %2 data contains object should be ARRAY, SCALAR, STRING type", _section, _key]; [_log] call iniDB_log;};
 	
-		if(count (toarray(format["%1", _data])) > 8191) then {
+		if(count (toarray(format["%1", _data])) > 8095) then {
 			_data = false;
 			_log = format["IniDBI: write failed %1 %2 data too big > 8K", _section, _key];
 			[_log] call iniDB_log;
